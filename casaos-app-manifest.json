@@ -1,0 +1,11 @@
+{
+  "id": "currency-converter",
+  "name": "Currency Converter",
+  "version": "1.0.0",
+  "description": "Application React de conversion des devises",
+  "docker_image": "currency-converter-app",
+  "ports": [8080],
+  "icon": "https://cdn-icons-png.flaticon.com/512/747/747376.png",
+  "url": "http://localhost:8080",
+  "categories": ["Utility"]
+}
