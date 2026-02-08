@@ -1,38 +1,218 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.App-header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.converter-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  margin-top: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.converter-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #ffd700, #ff8c00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.converter-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+
+.conversion-box {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.currency-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.currency-flag {
+  font-size: 2rem;
+}
+
+.currency-select {
+  flex: 1;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.currency-select option {
+  background: #333;
+  color: white;
+}
+
+.currency-input {
+  flex: 1;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 1.5rem;
+  text-align: right;
+  font-weight: bold;
+}
+
+.currency-input:focus {
+  outline: none;
+  border-color: #61dafb;
+}
+
+.swap-button {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.swap-button:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+.result-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 15px;
+  margin-top: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.result-amount {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 20px 0;
+  color: #ffd700;
+}
+
+.result-text {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.rate-info {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.currency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.currency-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.currency-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.currency-card-selected {
+  background: rgba(96, 218, 251, 0.2);
+  border-color: #61dafb;
+}
+
+.currency-card-flag {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.currency-card-code {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.currency-card-name {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.loading {
+  font-size: 1.2rem;
+  color: #61dafb;
+  margin: 20px 0;
+}
+
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .converter-container {
+    padding: 20px;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .currency-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .currency-input,
+  .currency-select {
+    width: 100%;
+  }
+  
+  .result-amount {
+    font-size: 2rem;
+  }
+  
+  .converter-title {
+    font-size: 2rem;
   }
 }
