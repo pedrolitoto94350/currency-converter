@@ -52,6 +52,19 @@
   padding: 25px;
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.currency-row > * {
+  flex: 1;
+  min-width: 150px;
+}
+
+.currency-flag {
+  font-size: 2rem;
+  flex: 0 0 auto;
+  width: 60px;
+  text-align: center;
 }
 
 .currency-flag {
@@ -201,6 +214,16 @@
   .currency-row {
     flex-direction: column;
     gap: 15px;
+  }
+  
+  .currency-row > * {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .currency-flag {
+    width: 100%;
+    margin-bottom: 10px;
   }
   
   .currency-input,
