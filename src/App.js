@@ -29,8 +29,8 @@ const CURRENCIES = [
   { code: 'SAR', name: 'Riyal saoudien', flag: '🇸🇦', symbol: 'ر.س' },
 ];
 
-// Taux de change fixes (pour la démo - en production, utiliser une API)
-const EXCHANGE_RATES = {
+// Taux de change par défaut (fallback si API échoue)
+const DEFAULT_RATES = {
   USD: 1,
   EUR: 0.92,
   GBP: 0.79,
@@ -63,34 +63,57 @@ function App() {
   const [toCurrency, setToCurrency] = useState('USD');
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [exchangeRate, setExchangeRate] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rates, setRates] = useState(DEFAULT_RATES);
+  const [lastUpdated, setLastUpdated] = useState('');
 
   // Trouver les infos des devises sélectionnées
   const fromCurrencyInfo = CURRENCIES.find(c => c.code === fromCurrency);
   const toCurrencyInfo = CURRENCIES.find(c => c.code === toCurrency);
 
-  // Fonction de conversion
-  const convertCurrency = () => {
+  // Récupérer les taux de change en temps réel
+  const fetchExchangeRates = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const amountNum = parseFloat(amount);
-      if (isNaN(amountNum) || amountNum < 0) {
-        throw new Error('Veuillez entrer un montant valide');
+      // API Frankfurter - Gratuite, sans clé, taux ECB
+      const response = await fetch(`https://api.frankfurter.app/latest?from=${fromCurrency}`);
+      
+      if (!response.ok) {
+        throw new Error('API temporairement indisponible');
       }
-
-      // Calcul du taux de change
-      const rate = EXCHANGE_RATES[toCurrency] / EXCHANGE_RATES[fromCurrency];
+      
+      const data = await response.json();
+      
+      // Mettre à jour les taux
+      const newRates = { ...DEFAULT_RATES, ...data.rates };
+      newRates[fromCurrency] = 1; // La devise source = 1
+      
+      setRates(newRates);
+      setLastUpdated(new Date().toLocaleTimeString('fr-FR'));
+      
+      // Calculer le taux de change actuel
+      const rate = newRates[toCurrency] || DEFAULT_RATES[toCurrency];
       setExchangeRate(rate);
       
-      // Calcul du montant converti
+      // Calculer le montant converti
+      const amountNum = parseFloat(amount) || 0;
       const result = amountNum * rate;
       setConvertedAmount(result.toFixed(2));
+      
     } catch (err) {
-      setError(err.message);
-      setConvertedAmount(0);
+      console.warn('Utilisation des taux par défaut:', err.message);
+      setError('API temporairement indisponible - Taux fixes utilisés');
+      
+      // Utiliser les taux par défaut
+      const rate = DEFAULT_RATES[toCurrency] / DEFAULT_RATES[fromCurrency];
+      setExchangeRate(rate);
+      
+      const amountNum = parseFloat(amount) || 0;
+      const result = amountNum * rate;
+      setConvertedAmount(result.toFixed(2));
     } finally {
       setLoading(false);
     }
@@ -109,7 +132,7 @@ function App() {
 
   // Convertir au chargement et à chaque changement
   useEffect(() => {
-    convertCurrency();
+    fetchExchangeRates();
   }, [amount, fromCurrency, toCurrency]);
 
   return (
@@ -118,6 +141,12 @@ function App() {
         <div className="converter-container">
           <h1 className="converter-title">💰 Convertisseur de Devises</h1>
           <p className="converter-subtitle">Taux de change en temps réel • Conversion instantanée</p>
+          
+          {error && (
+            <div className="error" style={{ marginBottom: '20px' }}>
+              ⚠️ {error}
+            </div>
+          )}
           
           <div className="conversion-box">
             {/* Devise source */}
@@ -173,9 +202,7 @@ function App() {
           {/* Résultat de la conversion */}
           <div className="result-box">
             {loading ? (
-              <div className="loading">Calcul en cours...</div>
-            ) : error ? (
-              <div className="error">{error}</div>
+              <div className="loading">⏳ Chargement des taux en temps réel...</div>
             ) : (
               <>
                 <div className="result-text">
@@ -190,6 +217,11 @@ function App() {
                 <div className="rate-info">
                   1 {toCurrency} = {(1 / exchangeRate).toFixed(4)} {fromCurrency}
                 </div>
+                {lastUpdated && (
+                  <div className="rate-info" style={{ color: '#61dafb', marginTop: '10px' }}>
+                    🔄 Mis à jour à {lastUpdated} (API Frankfurter)
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -212,8 +244,8 @@ function App() {
           {/* Informations */}
           <div style={{ marginTop: '40px', fontSize: '0.9rem', opacity: 0.7 }}>
             <p>💡 <strong>Astuce :</strong> Cliquez sur une devise pour la sélectionner rapidement</p>
-            <p>⚡ <strong>Fonctionnalités :</strong> Conversion instantanée • Échange de devises • Taux fixes</p>
-            <p>🚀 <strong>Prochainement :</strong> API temps réel • Historique • Graphiques</p>
+            <p>⚡ <strong>Fonctionnalités :</strong> Taux en temps réel • Conversion instantanée • 25+ devises</p>
+            <p>🔧 <strong>Technique :</strong> React • Vercel • API Frankfurter (gratuit)</p>
           </div>
         </div>
 
@@ -228,6 +260,10 @@ function App() {
           >
             📁 Voir le code source
           </a>
+          <div style={{ marginTop: '20px', fontSize: '0.8rem', opacity: 0.6 }}>
+            <p>API : Frankfurter.app (gratuit, sans clé, taux BCE)</p>
+            <p>Déploiement : Vercel (automatique à chaque push GitHub)</p>
+          </div>
         </div>
       </header>
     </div>
